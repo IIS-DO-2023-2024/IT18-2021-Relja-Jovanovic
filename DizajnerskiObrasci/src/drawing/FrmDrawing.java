@@ -24,11 +24,14 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import mvc.DrawingController;
+import mvc.DrawingModel;
 
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 
@@ -75,18 +78,32 @@ public class FrmDrawing extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					FrmDrawing frame = new FrmDrawing();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	    EventQueue.invokeLater(new Runnable() {
+	        public void run() {
+	            try {
+	                DrawingModel model = new DrawingModel();
+	                FrmDrawing frame = new FrmDrawing();
+	                
+	                frame.getView().setModel(model);
+	                
+	                DrawingController controller = new DrawingController(model, frame);
+	                frame.setController(controller); 
+	                
+	                frame.setVisible(true);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    });
 	}
-
+	protected void setController(DrawingController controller) {
+		// TODO Auto-generated method stub
+		
+	}
+	protected AbstractButton getView() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	/**
 	 * Create the frame.
 	 */
