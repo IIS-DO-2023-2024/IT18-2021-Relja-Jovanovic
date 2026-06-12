@@ -45,7 +45,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.awt.Cursor;
 
-public class FrmDrawing extends JFrame {
+public class FrmDrawing extends JFrame implements observer.Observer {
 
 	private final int OPERATION_DRAWING = 1;
 	private final int OPERATION_EDIT_DELETE = 0;
@@ -70,10 +70,15 @@ public class FrmDrawing extends JFrame {
 	private JButton btnRedo = new JButton("Redo");
 	private javax.swing.JTextArea txtLog = new javax.swing.JTextArea();
 	private JToggleButton btnShapeHexagon = new JToggleButton("Hexagon");
-	
+	private JButton btnToFront = new JButton("To Front");
+	private JButton btnToBack = new JButton("To Back");
+	private JButton btnBringToFront = new JButton("Bring To Front");
+	private JButton btnBringToBack = new JButton("Bring To Back");
 	private Color edgeColor = Color.BLACK, innerColor = Color.WHITE;
 	boolean lineWaitingForEndPoint = false;
 	private Point startPoint;
+	
+	
 	
 	
 	private JPanel contentPane;
@@ -103,6 +108,9 @@ public class FrmDrawing extends JFrame {
 	}
 	protected void setController(DrawingController controller) {
 			this.controller=controller;
+			if (this.controller != null) {
+				this.controller.addObserver(this);
+			}
 	}
 	public PnlDrawing getView() {
 		return this.pnlDrawing;
@@ -259,6 +267,25 @@ public class FrmDrawing extends JFrame {
 				if (controller != null) controller.redo();
 			}
 		});
+		
+		btnToFront.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnToFront);
+		btnToBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnToBack);
+		btnBringToFront.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnBringToFront);
+		btnBringToBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnBringToBack);
+
+		btnToFront.setEnabled(false);
+		btnToBack.setEnabled(false);
+		btnBringToFront.setEnabled(false);
+		btnBringToBack.setEnabled(false);
+
+		btnToFront.addActionListener(e -> { if (controller != null) controller.toFront(); });
+		btnToBack.addActionListener(e -> { if (controller != null) controller.toBack(); });
+		btnBringToFront.addActionListener(e -> { if (controller != null) controller.bringToFront(); });
+		btnBringToBack.addActionListener(e -> { if (controller != null) controller.bringToBack(); });
 	}
 	
 	private void setOperationDrawing() {
@@ -281,6 +308,11 @@ public class FrmDrawing extends JFrame {
 		btnColorEdge.setEnabled(true);
 		btnColorInner.setEnabled(true);
 		btnShapeHexagon.setEnabled(true);
+		
+		btnToFront.setEnabled(false);
+		btnToBack.setEnabled(false);
+		btnBringToFront.setEnabled(false);
+		btnBringToBack.setEnabled(false);
 	}
 	
 
@@ -299,6 +331,8 @@ public class FrmDrawing extends JFrame {
 		btnColorEdge.setEnabled(false);
 		btnColorInner.setEnabled(false);
 		btnShapeHexagon.setEnabled(false);
+		
+		if (controller != null) controller.notifyObservers();
 	}
 
 	public boolean isOperationDrawingSelected() {
@@ -343,5 +377,17 @@ public class FrmDrawing extends JFrame {
 	
 	public boolean isShapeHexagonSelected() {
 	    return btnShapeHexagon.isSelected();
+	}
+	
+	@Override
+	public void update(int selectedShapesCount) {
+		if (activeOperation == OPERATION_EDIT_DELETE) {
+			btnActionEdit.setEnabled(selectedShapesCount == 1);
+			btnActionDelete.setEnabled(selectedShapesCount > 0);
+			btnToFront.setEnabled(selectedShapesCount == 1);
+	        btnToBack.setEnabled(selectedShapesCount == 1);
+	        btnBringToFront.setEnabled(selectedShapesCount == 1);
+	        btnBringToBack.setEnabled(selectedShapesCount == 1);
+		}
 	}
 }

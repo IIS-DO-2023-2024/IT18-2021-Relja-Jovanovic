@@ -5,7 +5,7 @@ import geometry.*;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 
-public class DrawingController {
+public class DrawingController implements observer.Subject {
     
     private DrawingModel model;
     private FrmDrawing frame;
@@ -17,6 +17,8 @@ public class DrawingController {
     
     private java.util.ArrayList<command.Command> undoList = new java.util.ArrayList<>();
     private java.util.ArrayList<command.Command> redoList = new java.util.ArrayList<>();
+    
+    private java.util.ArrayList<observer.Observer> observers = new java.util.ArrayList<>();
 
     public DrawingController(DrawingModel model, FrmDrawing frame) {
         this.model = model;
@@ -26,19 +28,51 @@ public class DrawingController {
     public void mouseClicked(MouseEvent e) {
         Point mouseClick = new Point(e.getX(), e.getY());
         
-        for (Shape shape : model.getShapes()) {
-            shape.setSelected(false);
-        }
-        
         if (frame.isOperationSelectSelected()) {
+            boolean shapeClicked = false;
+
             for (int i = model.getShapes().size() - 1; i >= 0; i--) {
                 if (model.get(i).contains(mouseClick.getX(), mouseClick.getY())) {
-                    model.get(i).setSelected(true);
+                    Shape shape = model.get(i);
+                    if (shape.isSelected()) {
+                        command.CmdDeselectShape cmd = new command.CmdDeselectShape(shape);
+                        cmd.execute();
+                        undoList.add(cmd);
+                        frame.log(cmd.toString());
+                    } else {
+                        command.CmdSelectShape cmd = new command.CmdSelectShape(shape);
+                        cmd.execute();
+                        undoList.add(cmd);
+                        frame.log(cmd.toString());
+                    }
+                    redoList.clear();
+                    updateUndoRedoButtons();
+                    shapeClicked = true;
                     break; 
                 }
             }
+
+            if (!shapeClicked) {
+                for (int i = model.getShapes().size() - 1; i >= 0; i--) {
+                    Shape shape = model.get(i);
+                    if (shape.isSelected()) {
+                        command.CmdDeselectShape cmd = new command.CmdDeselectShape(shape);
+                        cmd.execute();
+                        undoList.add(cmd);
+                        redoList.clear();
+                        frame.log(cmd.toString());
+                        updateUndoRedoButtons();
+                    }
+                }
+            }
+
             frame.getView().repaint();
+            notifyObservers(); 
             return;
+        }
+        
+        for (Shape shape : model.getShapes()) {
+            shape.setSelected(false);
         }
         
         if (frame.isOperationDrawingSelected()) {
@@ -136,8 +170,8 @@ public class DrawingController {
             
             frame.getView().repaint();
         }
+        notifyObservers();
     }
-
     public void chooseEdgeColor() {
         Color chosenColor = javax.swing.JColorChooser.showDialog(null, "Choose edge color", edgeColor);
         if (chosenColor != null) {
@@ -243,6 +277,7 @@ public class DrawingController {
                 frame.getView().repaint();
             }
         } 
+        notifyObservers();
     }
 
     public void deleteShape() {
@@ -266,6 +301,7 @@ public class DrawingController {
             updateUndoRedoButtons();
             frame.getView().repaint(); 
         }
+        notifyObservers();
     }
 
     private int getSelectedShapeIndex() {
@@ -282,6 +318,7 @@ public class DrawingController {
             shape.setSelected(false);
         }
         frame.getView().repaint();
+        notifyObservers();
     }
     
     public void undo() {
@@ -293,6 +330,7 @@ public class DrawingController {
             updateUndoRedoButtons();
             frame.getView().repaint();
         }
+        notifyObservers();
     }
 
     public void redo() {
@@ -304,10 +342,90 @@ public class DrawingController {
             updateUndoRedoButtons();
             frame.getView().repaint();
         }
+        notifyObservers();
     }
 
+    public void toFront() {
+        int index = getSelectedShapeIndex();
+        if (index == -1) return;
+        Shape shape = model.get(index);
+        command.CmdToFront cmd = new command.CmdToFront(model, shape);
+        cmd.execute();
+        undoList.add(cmd);
+        redoList.clear();
+        frame.log(cmd.toString());
+        updateUndoRedoButtons();
+        frame.getView().repaint();
+        notifyObservers();
+    }
+
+    public void toBack() {
+        int index = getSelectedShapeIndex();
+        if (index == -1) return;
+        Shape shape = model.get(index);
+        command.CmdToBack cmd = new command.CmdToBack(model, shape);
+        cmd.execute();
+        undoList.add(cmd);
+        redoList.clear();
+        frame.log(cmd.toString());
+        updateUndoRedoButtons();
+        frame.getView().repaint();
+        notifyObservers();
+    }
+
+    public void bringToFront() {
+        int index = getSelectedShapeIndex();
+        if (index == -1) return;
+        Shape shape = model.get(index);
+        command.CmdBringToFront cmd = new command.CmdBringToFront(model, shape);
+        cmd.execute();
+        undoList.add(cmd);
+        redoList.clear();
+        frame.log(cmd.toString());
+        updateUndoRedoButtons();
+        frame.getView().repaint();
+        notifyObservers();
+    }
+
+    public void bringToBack() {
+        int index = getSelectedShapeIndex();
+        if (index == -1) return;
+        Shape shape = model.get(index);
+        command.CmdBringToBack cmd = new command.CmdBringToBack(model, shape);
+        cmd.execute();
+        undoList.add(cmd);
+        redoList.clear();
+        frame.log(cmd.toString());
+        updateUndoRedoButtons();
+        frame.getView().repaint();
+        notifyObservers();
+    }
+    
     private void updateUndoRedoButtons() {
         frame.getBtnUndo().setEnabled(!undoList.isEmpty());
         frame.getBtnRedo().setEnabled(!redoList.isEmpty());
+    }
+    
+    @Override
+    public void addObserver(observer.Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(observer.Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        int selectedCount = 0;
+        for (Shape shape : model.getShapes()) {
+            if (shape.isSelected()) {
+                selectedCount++;
+            }
+        }
+        for (observer.Observer observer : observers) {
+            observer.update(selectedCount);
+        }
     }
 }
