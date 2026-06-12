@@ -2,6 +2,9 @@ package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 
 public class Donut extends Circle{
 
@@ -71,20 +74,47 @@ public class Donut extends Circle{
 				
 	}
 	public void draw(Graphics g) {
-		g.setColor(getColor());
-		super.draw(g); //spoljasnji krug
-		g.setColor(getInnerColor());
-		g.drawOval(getCenter().getX() - innerRadius, getCenter().getY() - innerRadius, innerRadius*2, innerRadius*2);
-		//unutrasnji krug
-		
-		if(isSelected()) {
+		java.awt.Graphics2D g2d = (java.awt.Graphics2D) g.create();
+
+		java.awt.geom.Ellipse2D outer = new java.awt.geom.Ellipse2D.Double(
+			getCenter().getX() - getRadius(), 
+			getCenter().getY() - getRadius(), 
+			getRadius() * 2, 
+			getRadius() * 2
+		);
+
+		java.awt.geom.Ellipse2D inner = new java.awt.geom.Ellipse2D.Double(
+			getCenter().getX() - getInnerRadius(), 
+			getCenter().getY() - getInnerRadius(), 
+			getInnerRadius() * 2, 
+			getInnerRadius() * 2
+		);
+
+		java.awt.geom.Area donutArea = new java.awt.geom.Area(outer);
+		donutArea.subtract(new java.awt.geom.Area(inner));
+
+		g2d.setColor(getInnerColor());
+		g2d.fill(donutArea);
+
+		g2d.setColor(getColor()); 
+		g2d.draw(donutArea);
+
+		if (isSelected()) {
 			g.setColor(Color.BLUE);
-			g.drawRect(getCenter().getX() - innerRadius -2, getCenter().getY()-2, 4, 4);
-			g.drawRect(getCenter().getX() + innerRadius -2, getCenter().getY()-2, 4, 4);
-			g.drawRect(getCenter().getX() -2, getCenter().getY()- innerRadius-2, 4, 4);
-			g.drawRect(getCenter().getX() -2, getCenter().getY()+ innerRadius-2, 4, 4);
+			g.drawRect(getCenter().getX() - 2, getCenter().getY() - 2, 4, 4);
+			g.drawRect(getCenter().getX() - getRadius() - 2, getCenter().getY() - 2, 4, 4);
+			g.drawRect(getCenter().getX() + getRadius() - 2, getCenter().getY() - 2, 4, 4);
+			g.drawRect(getCenter().getX() - 2, getCenter().getY() - getRadius() - 2, 4, 4);
+			g.drawRect(getCenter().getX() - 2, getCenter().getY() + getRadius() - 2, 4, 4);
+			
+			g.drawRect(getCenter().getX() - getInnerRadius() - 2, getCenter().getY() - 2, 4, 4);
+			g.drawRect(getCenter().getX() + getInnerRadius() - 2, getCenter().getY() - 2, 4, 4);
+			g.drawRect(getCenter().getX() - 2, getCenter().getY() - getInnerRadius() - 2, 4, 4);
+			g.drawRect(getCenter().getX() - 2, getCenter().getY() + getInnerRadius() - 2, 4, 4);
 		}
-	}
+		
+		g2d.dispose();
+	}	
 	
 	public int compareTo(Object obj) {
 		if (obj instanceof Donut) {
