@@ -110,4 +110,87 @@ public class DrawingController {
             innerColor = chosenColor;
         }
     }
+    
+    public void modifyShape() {
+        int index = getSelectedShapeIndex();
+        if (index == -1) return; 
+        
+        Shape shape = model.get(index);
+        
+        if (shape instanceof Point) {
+            DlgPoint dlgPoint = new DlgPoint();
+            dlgPoint.setPoint((Point)shape);
+            dlgPoint.setVisible(true);
+            
+            if(dlgPoint.getPoint() != null) {
+                model.getShapes().set(index, dlgPoint.getPoint()); // Ažuriramo model
+                frame.getView().repaint();
+            }
+        } else if (shape instanceof Line) {
+            DlgLine dlgLine = new DlgLine();
+            dlgLine.setLine((Line)shape);
+            dlgLine.setVisible(true);
+            
+            if(dlgLine.getLine() != null) {
+                model.getShapes().set(index, dlgLine.getLine());
+                frame.getView().repaint();
+            }
+        } else if (shape instanceof Rectangle) {
+            DlgRectangle dlgRectangle = new DlgRectangle();
+            dlgRectangle.setRectangle((Rectangle)shape);
+            dlgRectangle.setVisible(true);
+            
+            if(dlgRectangle.getRectangle() != null) {
+                model.getShapes().set(index, dlgRectangle.getRectangle());
+                frame.getView().repaint();
+            }
+        } else if (shape instanceof Donut) {
+            DlgDonut dlgDonut = new DlgDonut();
+            dlgDonut.setDonut((Donut)shape);
+            dlgDonut.setVisible(true);
+            
+            if(dlgDonut.getDonut() != null) {
+                model.getShapes().set(index, dlgDonut.getDonut());
+                frame.getView().repaint();
+            }
+        } else if (shape instanceof Circle) {
+            DlgCircle dlgCircle = new DlgCircle();
+            dlgCircle.setCircle((Circle)shape);
+            dlgCircle.setVisible(true);
+            
+            if(dlgCircle.getCircle() != null) {
+                model.getShapes().set(index, dlgCircle.getCircle());
+                frame.getView().repaint();
+            }
+        } 
+    }
+
+    public void deleteShape() {
+        if (model.getShapes().isEmpty()) return;
+        
+        int response = javax.swing.JOptionPane.showConfirmDialog(null, 
+            "Da li zaista želite da obrišete selektovani oblik?", "Potvrda brisanja", 
+            javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
+            
+        if (response == 0) { 
+            model.getShapes().removeIf(shape -> shape.isSelected());
+            frame.getView().repaint(); 
+        }
+    }
+
+    private int getSelectedShapeIndex() {
+        for (int i = model.getShapes().size() - 1; i >= 0; i--) {
+            if (model.get(i).isSelected()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    public void deselectAll() {
+        for (Shape shape : model.getShapes()) {
+            shape.setSelected(false);
+        }
+        frame.getView().repaint();
+    }
 }

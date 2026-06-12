@@ -117,8 +117,32 @@ public class FrmDrawing extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		pnlDrawing.addMouseListener(pnlDrawingClickListener());
+		pnlDrawing.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (controller != null) {
+                    controller.mouseClicked(e);
+                }
+            }
+        });
+		
 		contentPane.add(pnlDrawing, BorderLayout.CENTER);
+		
+        btnActionEdit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (controller != null) {
+                    controller.modifyShape();
+                }
+            }
+        });
+        
+        btnActionDelete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (controller != null) {
+                    controller.deleteShape();
+                }
+            }
+        });
 		
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.WEST);
@@ -149,14 +173,25 @@ public class FrmDrawing extends JFrame {
 		JPanel panel_3 = new JPanel();
 		panel_1.add(panel_3);
 		
-		btnActionEdit.addActionListener(btnActionEditClickListener());
+		btnActionEdit.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        if (controller != null) {
+		            controller.modifyShape();
+		        }
+		    }
+		});
 		btnActionEdit.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_3.add(btnActionEdit);
-		
-		btnActionDelete.addActionListener(btnActionDeleteClickListener());
+
+		btnActionDelete.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        if (controller != null) {
+		            controller.deleteShape();
+		        }
+		    }
+		});
 		btnActionDelete.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnActionDelete);
-		
+		panel_3.add(btnActionDelete);		
 		
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4);
@@ -199,166 +234,13 @@ public class FrmDrawing extends JFrame {
 		
 	}
 	
-	private MouseAdapter pnlDrawingClickListener() {
-		
-		return new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Point mouseClick = new Point(e.getX(), e.getY());
-				pnlDrawing.deselect();
-				
-				if (activeOperation == OPERATION_EDIT_DELETE) {
-					pnlDrawing.select(mouseClick);
-					return;
-				}
-				
-				if (btnShapePoint.isSelected()) {
-					DlgPoint dlgPoint = new DlgPoint();
-					dlgPoint.setPoint(mouseClick);
-					dlgPoint.setColors(edgeColor);
-					dlgPoint.setVisible(true);
-					if(dlgPoint.getPoint() != null) pnlDrawing.addShape(dlgPoint.getPoint());
-					return;
-					
-				} else if (btnShapeLine.isSelected()) {
-					if(lineWaitingForEndPoint) {
-						
-						DlgLine dlgLine = new DlgLine();
-						Line line = new Line(startPoint,mouseClick);
-						dlgLine.setLine(line);
-						dlgLine.setColors(edgeColor);
-						dlgLine.setVisible(true);
-						if(dlgLine.getLine()!= null) pnlDrawing.addShape(dlgLine.getLine());
-						lineWaitingForEndPoint=false;
-						return;
-					}
-					startPoint = mouseClick;
-					lineWaitingForEndPoint=true;
-					return;
-					
-		
-				} else if (btnShapeRectangle.isSelected()) {
-					DlgRectangle dlgRectangle = new DlgRectangle();
-					dlgRectangle.setPoint(mouseClick);
-					dlgRectangle.setColors(edgeColor, innerColor);
-					dlgRectangle.setVisible(true);
-					
-					if(dlgRectangle.getRectangle() != null) pnlDrawing.addShape(dlgRectangle.getRectangle());
-					return;
-				} else if (btnShapeCircle.isSelected()) {
-					DlgCircle dlgCircle = new DlgCircle();
-					dlgCircle.setPoint(mouseClick);
-					dlgCircle.setColors(innerColor, edgeColor);
-					dlgCircle.setVisible(true);
-					
-					if(dlgCircle.getCircle() != null) pnlDrawing.addShape(dlgCircle.getCircle());
-					return;
-				} else if (btnShapeDonut.isSelected()) {
-					DlgDonut dlgDonut = new DlgDonut();
-					dlgDonut.setPoint(mouseClick);
-					dlgDonut.setColors(edgeColor, innerColor);
-					dlgDonut.setVisible(true);
-					
-					if(dlgDonut.getDonut() != null) pnlDrawing.addShape(dlgDonut.getDonut());
-					return;
-				}
-			}
-		};
-	}
-	private ActionListener btnActionEditClickListener() {
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int index = pnlDrawing.getSelected();
-				if (index == -1) return;
-				
-				Shape shape = pnlDrawing.getShape(index);
-				
-				if (shape instanceof Point) {
-					DlgPoint dlgPoint = new DlgPoint();
-					dlgPoint.setPoint((Point)shape);
-					dlgPoint.setVisible(true);
-					
-					if(dlgPoint.getPoint() != null) {
-						pnlDrawing.setShape(index, dlgPoint.getPoint());
-						pnlDrawing.repaint();
-					}
-				} else if (shape instanceof Line) {
-					DlgLine dlgLine = new DlgLine();
-					dlgLine.setLine((Line)shape);
-					dlgLine.setVisible(true);
-					
-					if(dlgLine.getLine() != null) {
-						pnlDrawing.setShape(index, dlgLine.getLine());
-						pnlDrawing.repaint();
-					}
-				} else if (shape instanceof Rectangle) {
-					DlgRectangle dlgRectangle = new DlgRectangle();
-					dlgRectangle.setRectangle((Rectangle)shape);
-					dlgRectangle.setVisible(true);
-					
-					if(dlgRectangle.getRectangle() != null) {
-						pnlDrawing.setShape(index, dlgRectangle.getRectangle());
-						pnlDrawing.repaint();
-					}
-				
-				}else if (shape instanceof Donut) {
-						DlgDonut dlgDonut = new DlgDonut();
-						dlgDonut.setDonut((Donut)shape);
-						dlgDonut.setVisible(true);
-						
-						if(dlgDonut.getDonut() != null) {
-							pnlDrawing.setShape(index, dlgDonut.getDonut());
-							pnlDrawing.repaint();
-						}
-				} else if (shape instanceof Circle) {
-					DlgCircle dlgCircle = new DlgCircle();
-					dlgCircle.setCircle((Circle)shape);
-					dlgCircle.setVisible(true);
-					
-					if(dlgCircle.getCircle() != null) {
-						pnlDrawing.setShape(index, dlgCircle.getCircle());
-						pnlDrawing.repaint();
-					}
-				} 
-			}
-		};
-	}
-
-	private ActionListener btnActionDeleteClickListener() {
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (pnlDrawing.isEmpty()) return;
-				if (JOptionPane.showConfirmDialog(null, "Do you really want to delete selected shape?", "Yes", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) pnlDrawing.removeSelected();
-			}
-		};
-	}
-	
-	
-	
-
-	private ActionListener btnColorEdgeClickListener() {
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				edgeColor = JColorChooser.showDialog(null, "Choose edge color", edgeColor);
-				if (edgeColor == null) edgeColor = Color.BLACK;
-			}
-		};
-	}
-	
-	private ActionListener btnColorInnerClickListener() {
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				innerColor = JColorChooser.showDialog(null, "Choose inner color", innerColor);
-				if (innerColor == null) innerColor = Color.WHITE;
-			}
-		};
-	}
-	
 	private void setOperationDrawing() {
 	
 		activeOperation = OPERATION_DRAWING;
 		
-		pnlDrawing.deselect();
+		if (controller != null) {
+	        controller.deselectAll();
+	    }
 		
 		btnActionEdit.setEnabled(false);
 		btnActionDelete.setEnabled(false);
