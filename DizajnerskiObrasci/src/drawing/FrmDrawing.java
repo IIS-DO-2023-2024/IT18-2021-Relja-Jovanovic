@@ -69,6 +69,7 @@ public class FrmDrawing extends JFrame {
 	private JButton btnUndo = new JButton("Undo");
 	private JButton btnRedo = new JButton("Redo");
 	private javax.swing.JTextArea txtLog = new javax.swing.JTextArea();
+	private JToggleButton btnShapeHexagon = new JToggleButton("Hexagon");
 	
 	private Color edgeColor = Color.BLACK, innerColor = Color.WHITE;
 	boolean lineWaitingForEndPoint = false;
@@ -220,6 +221,10 @@ public class FrmDrawing extends JFrame {
 		btnsShapes.add(btnShapeDonut);
 		panel_4.add(btnShapeDonut);
 		
+		btnShapeHexagon.setAlignmentX(Component.CENTER_ALIGNMENT);
+		btnsShapes.add(btnShapeHexagon);
+		panel_4.add(btnShapeHexagon);
+		
 		btnOperationDrawing.setSelected(true);
 		setOperationDrawing();
 		
@@ -275,6 +280,7 @@ public class FrmDrawing extends JFrame {
 		
 		btnColorEdge.setEnabled(true);
 		btnColorInner.setEnabled(true);
+		btnShapeHexagon.setEnabled(true);
 	}
 	
 
@@ -292,6 +298,7 @@ public class FrmDrawing extends JFrame {
 		
 		btnColorEdge.setEnabled(false);
 		btnColorInner.setEnabled(false);
+		btnShapeHexagon.setEnabled(false);
 	}
 
 	public boolean isOperationDrawingSelected() {
@@ -332,5 +339,9 @@ public class FrmDrawing extends JFrame {
 
 	public JButton getBtnRedo() {
 		return btnRedo;
+	}
+	
+	public boolean isShapeHexagonSelected() {
+	    return btnShapeHexagon.isSelected();
 	}
 }

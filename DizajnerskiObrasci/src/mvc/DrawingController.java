@@ -119,6 +119,19 @@ public class DrawingController {
                     frame.log(cmd.toString());
                     updateUndoRedoButtons();
                 }
+            } else if (frame.isShapeHexagonSelected()) {
+                DlgHexagon dlgHex = new DlgHexagon();
+                dlgHex.setPoint(mouseClick);
+                dlgHex.setColors(edgeColor, innerColor);
+                dlgHex.setVisible(true);
+                if (dlgHex.getHexagon() != null) {
+                    command.CmdAddShape cmd = new command.CmdAddShape(model, dlgHex.getHexagon());
+                    cmd.execute();
+                    undoList.add(cmd);
+                    redoList.clear();
+                    frame.log(cmd.toString());
+                    updateUndoRedoButtons();
+                }
             }
             
             frame.getView().repaint();
@@ -215,6 +228,20 @@ public class DrawingController {
                 updateUndoRedoButtons();
                 frame.getView().repaint();
             }
+        } else if (shape instanceof geometry.HexagonAdapter) {
+            DlgHexagon dlgHex = new DlgHexagon();
+            dlgHex.setHexagon((geometry.HexagonAdapter) shape);
+            dlgHex.setVisible(true);
+
+            if(dlgHex.getHexagon() != null) {
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, shape, dlgHex.getHexagon());
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+                frame.log(cmd.toString());
+                updateUndoRedoButtons();
+                frame.getView().repaint();
+            }
         } 
     }
 
@@ -226,7 +253,6 @@ public class DrawingController {
             javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
             
         if (response == 0) { 
-            // Prolazimo kroz listu unazad da izbegnemo probleme sa indeksima pri brisanju
             for (int i = model.getShapes().size() - 1; i >= 0; i--) {
                 Shape shape = model.get(i);
                 if (shape.isSelected()) {
