@@ -66,6 +66,9 @@ public class FrmDrawing extends JFrame {
 	private JToggleButton btnShapeDonut = new JToggleButton("Donut");
 	private JButton btnColorEdge = new JButton("Edge color");
 	private JButton btnColorInner = new JButton("Inner color");
+	private JButton btnUndo = new JButton("Undo");
+	private JButton btnRedo = new JButton("Redo");
+	private javax.swing.JTextArea txtLog = new javax.swing.JTextArea();
 	
 	private Color edgeColor = Color.BLACK, innerColor = Color.WHITE;
 	boolean lineWaitingForEndPoint = false;
@@ -232,6 +235,25 @@ public class FrmDrawing extends JFrame {
 		    }
 		});
 		
+		btnUndo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnUndo);
+		btnRedo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnRedo);
+		
+		btnUndo.setEnabled(false);
+		btnRedo.setEnabled(false);
+
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (controller != null) controller.undo();
+			}
+		});
+
+		btnRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (controller != null) controller.redo();
+			}
+		});
 	}
 	
 	private void setOperationDrawing() {
@@ -298,5 +320,17 @@ public class FrmDrawing extends JFrame {
 
 	public boolean isShapeDonutSelected() {
 	    return btnShapeDonut.isSelected();
+	}
+	
+	public void log(String message) {
+		txtLog.append(message + "\n");
+	}
+
+	public JButton getBtnUndo() {
+		return btnUndo;
+	}
+
+	public JButton getBtnRedo() {
+		return btnRedo;
 	}
 }

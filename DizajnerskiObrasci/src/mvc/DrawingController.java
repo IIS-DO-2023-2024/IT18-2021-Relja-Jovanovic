@@ -14,6 +14,9 @@ public class DrawingController {
     private Point startPoint;
     private Color edgeColor = Color.BLACK;
     private Color innerColor = Color.WHITE;
+    
+    private java.util.ArrayList<command.Command> undoList = new java.util.ArrayList<>();
+    private java.util.ArrayList<command.Command> redoList = new java.util.ArrayList<>();
 
     public DrawingController(DrawingModel model, FrmDrawing frame) {
         this.model = model;
@@ -46,7 +49,12 @@ public class DrawingController {
                 dlgPoint.setColors(edgeColor);
                 dlgPoint.setVisible(true);
                 if (dlgPoint.getPoint() != null) {
-                    model.add(dlgPoint.getPoint());
+                    command.CmdAddShape cmd = new command.CmdAddShape(model, dlgPoint.getPoint());
+                    cmd.execute();
+                    undoList.add(cmd);
+                    redoList.clear();
+                    frame.log(cmd.toString());
+                    updateUndoRedoButtons();
                 }
                 
             } else if (frame.isShapeLineSelected()) {
@@ -57,7 +65,12 @@ public class DrawingController {
                     dlgLine.setColors(edgeColor);
                     dlgLine.setVisible(true);
                     if (dlgLine.getLine() != null) {
-                        model.add(dlgLine.getLine());
+                        command.CmdAddShape cmd = new command.CmdAddShape(model, dlgLine.getLine());
+                        cmd.execute();
+                        undoList.add(cmd);
+                        redoList.clear();
+                        frame.log(cmd.toString());
+                        updateUndoRedoButtons();
                     }
                     lineWaitingForEndPoint = false; 
                 } else {
@@ -71,7 +84,12 @@ public class DrawingController {
                 dlgRectangle.setColors(edgeColor, innerColor);
                 dlgRectangle.setVisible(true);
                 if (dlgRectangle.getRectangle() != null) {
-                    model.add(dlgRectangle.getRectangle());
+                    command.CmdAddShape cmd = new command.CmdAddShape(model, dlgRectangle.getRectangle());
+                    cmd.execute();
+                    undoList.add(cmd);
+                    redoList.clear();
+                    frame.log(cmd.toString());
+                    updateUndoRedoButtons();
                 }
                 
             } else if (frame.isShapeCircleSelected()) {
@@ -80,7 +98,12 @@ public class DrawingController {
                 dlgCircle.setColors(innerColor, edgeColor); 
                 dlgCircle.setVisible(true);
                 if (dlgCircle.getCircle() != null) {
-                    model.add(dlgCircle.getCircle());
+                    command.CmdAddShape cmd = new command.CmdAddShape(model, dlgCircle.getCircle());
+                    cmd.execute();
+                    undoList.add(cmd);
+                    redoList.clear();
+                    frame.log(cmd.toString());
+                    updateUndoRedoButtons();
                 }
                 
             } else if (frame.isShapeDonutSelected()) {
@@ -89,7 +112,12 @@ public class DrawingController {
                 dlgDonut.setColors(edgeColor, innerColor);
                 dlgDonut.setVisible(true);
                 if (dlgDonut.getDonut() != null) {
-                    model.add(dlgDonut.getDonut());
+                    command.CmdAddShape cmd = new command.CmdAddShape(model, dlgDonut.getDonut());
+                    cmd.execute();
+                    undoList.add(cmd);
+                    redoList.clear();
+                    frame.log(cmd.toString());
+                    updateUndoRedoButtons();
                 }
             }
             
@@ -123,7 +151,12 @@ public class DrawingController {
             dlgPoint.setVisible(true);
             
             if(dlgPoint.getPoint() != null) {
-                model.getShapes().set(index, dlgPoint.getPoint()); // Ažuriramo model
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, shape, dlgPoint.getPoint());
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+                frame.log(cmd.toString());
+                updateUndoRedoButtons();
                 frame.getView().repaint();
             }
         } else if (shape instanceof Line) {
@@ -132,7 +165,12 @@ public class DrawingController {
             dlgLine.setVisible(true);
             
             if(dlgLine.getLine() != null) {
-                model.getShapes().set(index, dlgLine.getLine());
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, shape, dlgLine.getLine());
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+                frame.log(cmd.toString());
+                updateUndoRedoButtons();
                 frame.getView().repaint();
             }
         } else if (shape instanceof Rectangle) {
@@ -141,7 +179,12 @@ public class DrawingController {
             dlgRectangle.setVisible(true);
             
             if(dlgRectangle.getRectangle() != null) {
-                model.getShapes().set(index, dlgRectangle.getRectangle());
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, shape, dlgRectangle.getRectangle());
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+                frame.log(cmd.toString());
+                updateUndoRedoButtons();
                 frame.getView().repaint();
             }
         } else if (shape instanceof Donut) {
@@ -150,7 +193,12 @@ public class DrawingController {
             dlgDonut.setVisible(true);
             
             if(dlgDonut.getDonut() != null) {
-                model.getShapes().set(index, dlgDonut.getDonut());
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, shape, dlgDonut.getDonut());
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+                frame.log(cmd.toString());
+                updateUndoRedoButtons();
                 frame.getView().repaint();
             }
         } else if (shape instanceof Circle) {
@@ -159,7 +207,12 @@ public class DrawingController {
             dlgCircle.setVisible(true);
             
             if(dlgCircle.getCircle() != null) {
-                model.getShapes().set(index, dlgCircle.getCircle());
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, shape, dlgCircle.getCircle());
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+                frame.log(cmd.toString());
+                updateUndoRedoButtons();
                 frame.getView().repaint();
             }
         } 
@@ -173,7 +226,18 @@ public class DrawingController {
             javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
             
         if (response == 0) { 
-            model.getShapes().removeIf(shape -> shape.isSelected());
+            // Prolazimo kroz listu unazad da izbegnemo probleme sa indeksima pri brisanju
+            for (int i = model.getShapes().size() - 1; i >= 0; i--) {
+                Shape shape = model.get(i);
+                if (shape.isSelected()) {
+                    command.CmdRemoveShape cmd = new command.CmdRemoveShape(model, shape);
+                    cmd.execute();
+                    undoList.add(cmd);
+                    frame.log(cmd.toString());
+                }
+            }
+            redoList.clear();
+            updateUndoRedoButtons();
             frame.getView().repaint(); 
         }
     }
@@ -192,5 +256,32 @@ public class DrawingController {
             shape.setSelected(false);
         }
         frame.getView().repaint();
+    }
+    
+    public void undo() {
+        if (!undoList.isEmpty()) {
+            command.Command cmd = undoList.remove(undoList.size() - 1);
+            cmd.unexecute();
+            redoList.add(cmd);
+            frame.log("Undo -> " + cmd.toString());
+            updateUndoRedoButtons();
+            frame.getView().repaint();
+        }
+    }
+
+    public void redo() {
+        if (!redoList.isEmpty()) {
+            command.Command cmd = redoList.remove(redoList.size() - 1);
+            cmd.execute();
+            undoList.add(cmd);
+            frame.log("Redo -> " + cmd.toString());
+            updateUndoRedoButtons();
+            frame.getView().repaint();
+        }
+    }
+
+    private void updateUndoRedoButtons() {
+        frame.getBtnUndo().setEnabled(!undoList.isEmpty());
+        frame.getBtnRedo().setEnabled(!redoList.isEmpty());
     }
 }
