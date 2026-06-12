@@ -73,6 +73,7 @@ public class FrmDrawing extends JFrame {
 	
 	
 	private JPanel contentPane;
+	protected DrawingController controller;
 
 	/**
 	 * Launch the application.
@@ -97,12 +98,10 @@ public class FrmDrawing extends JFrame {
 	    });
 	}
 	protected void setController(DrawingController controller) {
-		// TODO Auto-generated method stub
-		
+			this.controller=controller;
 	}
-	protected AbstractButton getView() {
-		// TODO Auto-generated method stub
-		return null;
+	public PnlDrawing getView() {
+		return this.pnlDrawing;
 	}
 	/**
 	 * Create the frame.
@@ -185,6 +184,18 @@ public class FrmDrawing extends JFrame {
 		
 		btnOperationDrawing.setSelected(true);
 		setOperationDrawing();
+		
+		btnColorEdge.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        controller.chooseEdgeColor();
+		    }
+		});
+
+		btnColorInner.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        controller.chooseInnerColor();
+		    }
+		});
 		
 	}
 	
@@ -322,6 +333,8 @@ public class FrmDrawing extends JFrame {
 		};
 	}
 	
+	
+	
 
 	private ActionListener btnColorEdgeClickListener() {
 		return new ActionListener() {
@@ -375,5 +388,33 @@ public class FrmDrawing extends JFrame {
 		
 		btnColorEdge.setEnabled(false);
 		btnColorInner.setEnabled(false);
+	}
+
+	public boolean isOperationDrawingSelected() {
+	    return btnOperationDrawing.isSelected();
+	}
+
+	public boolean isOperationSelectSelected() {
+	    return btnOperationEditOrDelete.isSelected();
+	}
+
+	public boolean isShapePointSelected() {
+	    return btnShapePoint.isSelected();
+	}
+
+	public boolean isShapeLineSelected() {
+	    return btnShapeLine.isSelected();
+	}
+
+	public boolean isShapeRectangleSelected() {
+	    return btnShapeRectangle.isSelected();
+	}
+
+	public boolean isShapeCircleSelected() {
+	    return btnShapeCircle.isSelected();
+	}
+
+	public boolean isShapeDonutSelected() {
+	    return btnShapeDonut.isSelected();
 	}
 }

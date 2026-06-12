@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 
 import geometry.Point;
 import geometry.Shape;
+import mvc.DrawingModel;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -14,12 +15,14 @@ public class PnlDrawing extends JPanel {
 
 	private ArrayList<Shape> shapes = new ArrayList<Shape>();
 	private int i;
-	
+	private DrawingModel model;
 	public PnlDrawing() {
 		setBackground(Color.WHITE);
 	}
 	
-	
+	public void setModel(DrawingModel model) {
+        this.model = model;
+    }
 	public void paint(Graphics g) {
 		super.paint(g);
 		Iterator<Shape> it =shapes.iterator();
