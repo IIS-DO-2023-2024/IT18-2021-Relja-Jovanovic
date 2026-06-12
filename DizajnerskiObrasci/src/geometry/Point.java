@@ -114,5 +114,9 @@ public class Point extends Shape {
 		}
 		return 0;
 	}
-
+	
+	@Override
+	public Point clone() {
+		return new Point(this.getX(), this.getY(), this.isSelected(), this.getColor());
+	}
 }

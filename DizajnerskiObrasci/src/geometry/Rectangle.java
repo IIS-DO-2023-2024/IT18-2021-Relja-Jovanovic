@@ -131,4 +131,9 @@ public class Rectangle extends SurfaceShape {
 		}
 		return 0;
 	}
+	
+	@Override
+	public Rectangle clone() {
+		return new Rectangle(this.getUpperLeft().clone(), this.getWidth(), this.getHeight(), this.isSelected(), this.getColor(), this.getInnerColor());
+	}
 }

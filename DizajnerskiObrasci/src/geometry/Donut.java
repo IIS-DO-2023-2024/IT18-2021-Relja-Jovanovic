@@ -122,5 +122,10 @@ public class Donut extends Circle{
 		}
 		return 0;
 	}
+	
+	@Override
+	public Donut clone() {
+		return new Donut(this.getCenter().clone(), this.getRadius(), this.getInnerRadius(), this.isSelected(), this.getColor(), this.getInnerColor());
+	}
 
 }

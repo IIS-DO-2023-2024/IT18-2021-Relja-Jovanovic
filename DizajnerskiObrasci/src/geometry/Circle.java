@@ -69,7 +69,7 @@ public class Circle extends SurfaceShape {
 	}
 	public void setRadius(int radius) throws Exception {
 		if (radius < 0) 
-			throw new Exception("Radius ne može biti manji od 0!");
+			throw new Exception("Radius ne moï¿½e biti manji od 0!");
 		
 		this.radius = radius;
 	}
@@ -119,6 +119,11 @@ public class Circle extends SurfaceShape {
 			return  (int) (this.area() - ((Circle) obj).area());
 		}
 		return 0;
+	}
+	
+	@Override
+	public Circle clone() {
+		return new Circle(this.getCenter().clone(), this.getRadius(), this.isSelected(), this.getColor(), this.getInnerColor());
 	}
 
 }

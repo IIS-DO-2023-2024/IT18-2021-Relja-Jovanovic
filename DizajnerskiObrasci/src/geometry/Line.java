@@ -98,4 +98,9 @@ public class Line extends Shape{
 		}
 		return 0;
 	}
+	
+	@Override
+	public Line clone() {
+		return new Line(this.getStartPoint().clone(), this.getEndPoint().clone(), this.isSelected(), this.getColor());
+	}
 }
