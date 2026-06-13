@@ -428,4 +428,14 @@ public class DrawingController implements observer.Subject {
             observer.update(selectedCount);
         }
     }
+    
+    public void saveDrawing() {
+        strategy.SaveManager manager = new strategy.SaveManager(new strategy.SaveDrawing(model));
+        manager.save();
+    }
+
+    public void saveLog() {
+        strategy.SaveManager manager = new strategy.SaveManager(new strategy.SaveLog(frame));
+        manager.save();
+    }
 }

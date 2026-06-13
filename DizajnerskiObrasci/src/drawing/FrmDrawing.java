@@ -128,6 +128,20 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		
+        javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
+        setJMenuBar(menuBar);
+
+        javax.swing.JMenu mnFile = new javax.swing.JMenu("File");
+        menuBar.add(mnFile);
+
+        javax.swing.JMenuItem mntmSaveDrawing = new javax.swing.JMenuItem("Save Drawing");
+        mntmSaveDrawing.addActionListener(e -> { if (controller != null) controller.saveDrawing(); });
+        mnFile.add(mntmSaveDrawing);
+
+        javax.swing.JMenuItem mntmSaveLog = new javax.swing.JMenuItem("Save Log");
+        mntmSaveLog.addActionListener(e -> { if (controller != null) controller.saveLog(); });
+        mnFile.add(mntmSaveLog);
 
 		pnlDrawing.addMouseListener(new MouseAdapter() {
             @Override
@@ -390,4 +404,8 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 	        btnBringToBack.setEnabled(selectedShapesCount == 1);
 		}
 	}
+	
+	public javax.swing.JTextArea getTxtLog() {
+        return txtLog;
+    }
 }
