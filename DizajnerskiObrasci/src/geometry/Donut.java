@@ -69,9 +69,11 @@ public class Donut extends Circle{
 	}
 	
 	
+	@Override
 	public String toString() {
-		return super.toString() + " , innerRadius: " + innerRadius;
-				
+		return "Donut:x=" + getCenter().getX() + ":y=" + getCenter().getY() + 
+               ":radius=" + getRadius() + ":innerRadius=" + innerRadius + 
+               ":edgeColor=" + getColor().getRGB() + ":innerColor=" + getInnerColor().getRGB();
 	}
 	public void draw(Graphics g) {
 		java.awt.Graphics2D g2d = (java.awt.Graphics2D) g.create();

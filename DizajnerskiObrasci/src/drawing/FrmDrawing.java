@@ -152,8 +152,15 @@ public class FrmDrawing extends JFrame implements observer.Observer {
             }
         });
 		
-		contentPane.add(pnlDrawing, BorderLayout.CENTER);
-		
+        javax.swing.JTabbedPane tabbedPane = new javax.swing.JTabbedPane();
+        contentPane.add(tabbedPane, BorderLayout.CENTER);
+        
+        tabbedPane.addTab("Drawing Canvas", pnlDrawing);
+        
+        txtLog.setEditable(false);
+        javax.swing.JScrollPane scrollPaneLog = new javax.swing.JScrollPane(txtLog);
+        tabbedPane.addTab("Activity Log", scrollPaneLog);
+        
         btnActionEdit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (controller != null) {

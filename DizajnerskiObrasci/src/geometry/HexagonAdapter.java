@@ -118,7 +118,9 @@ public class HexagonAdapter extends SurfaceShape {
     }
 
     @Override
-    public String toString() {
-        return "Hexagon: center=" + getCenter() + ", radius=" + hexagon.getR();
-    }
+	public String toString() {
+		return "Hexagon:x=" + getCenter().getX() + ":y=" + getCenter().getY() + 
+               ":radius=" + getRadius() + 
+               ":edgeColor=" + getColor().getRGB() + ":innerColor=" + getInnerColor().getRGB();
+	}
 }

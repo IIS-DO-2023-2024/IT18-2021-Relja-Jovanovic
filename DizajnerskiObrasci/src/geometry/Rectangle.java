@@ -88,8 +88,11 @@ public class Rectangle extends SurfaceShape {
 			return false;
 		}
 	}
+	@Override
 	public String toString() {
-		return "Upper left point: " + upperLeft + " ,width= " + width + " ,height= " + height;
+		return "Rectangle:x=" + upperLeft.getX() + ":y=" + upperLeft.getY() + 
+               ":width=" + width + ":height=" + height + 
+               ":edgeColor=" + getColor().getRGB() + ":innerColor=" + getInnerColor().getRGB();
 	}
 	@Override
 	public void draw(Graphics g) {

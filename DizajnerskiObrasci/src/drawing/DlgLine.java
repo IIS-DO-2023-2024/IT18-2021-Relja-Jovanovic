@@ -181,7 +181,7 @@ public class DlgLine extends JDialog {
 		txtSecondY.setText("" + point.getY());
 	}
 	public void setColors(Color edgeColor) {
-		this.color = color;
+		this.color = edgeColor;
 	}
 
 	public void setLine(Line line) {

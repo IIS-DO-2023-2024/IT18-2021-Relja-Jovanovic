@@ -65,8 +65,11 @@ public class Line extends Shape{
 			return false;
 		}
 	}
+	@Override
 	public String toString() {
-		return startPoint + "-->" + endPoint; 
+		return "Line:startX=" + startPoint.getX() + ":startY=" + startPoint.getY() + 
+               ":endX=" + endPoint.getX() + ":endY=" + endPoint.getY() + 
+               ":color=" + getColor().getRGB();
 	}
 	@Override
 	public void draw(Graphics g) {

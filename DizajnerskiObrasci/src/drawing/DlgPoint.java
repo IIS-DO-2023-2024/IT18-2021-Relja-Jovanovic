@@ -138,7 +138,7 @@ public class DlgPoint extends JDialog {
 		return point;
 	}
 	public void setColors(Color edgeColor) {
-		this.color = color;
+		this.color = edgeColor;
 	}
 	
 	public void setPoint(Point point) {
