@@ -129,75 +129,53 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-        javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
-        setJMenuBar(menuBar);
+		javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
+		setJMenuBar(menuBar);
 
-        javax.swing.JMenu mnFile = new javax.swing.JMenu("File");
-        menuBar.add(mnFile);
+		javax.swing.JMenu mnFile = new javax.swing.JMenu("File");
+		menuBar.add(mnFile);
 
-        javax.swing.JMenuItem mntmSaveDrawing = new javax.swing.JMenuItem("Save Drawing");
-        mntmSaveDrawing.addActionListener(e -> { if (controller != null) controller.saveDrawing(); });
-        mnFile.add(mntmSaveDrawing);
+		javax.swing.JMenuItem mntmSaveDrawing = new javax.swing.JMenuItem("Save Drawing");
+		mntmSaveDrawing.addActionListener(e -> { if (controller != null) controller.saveDrawing(); });
+		mnFile.add(mntmSaveDrawing);
 
-        javax.swing.JMenuItem mntmSaveLog = new javax.swing.JMenuItem("Save Log");
-        mntmSaveLog.addActionListener(e -> { if (controller != null) controller.saveLog(); });
-        mnFile.add(mntmSaveLog);
+		javax.swing.JMenuItem mntmSaveLog = new javax.swing.JMenuItem("Save Log");
+		mntmSaveLog.addActionListener(e -> { if (controller != null) controller.saveLog(); });
+		mnFile.add(mntmSaveLog);
+		
+		javax.swing.JMenuItem mntmOpenDrawing = new javax.swing.JMenuItem("Open Drawing");
+		mntmOpenDrawing.addActionListener(e -> { if (controller != null) controller.openDrawing(); });
+		mnFile.add(mntmOpenDrawing);
+
+		javax.swing.JMenuItem mntmOpenLog = new javax.swing.JMenuItem("Open Log");
+		mntmOpenLog.addActionListener(e -> { if (controller != null) controller.openLog(); });
+		mnFile.add(mntmOpenLog);
 
 		pnlDrawing.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (controller != null) {
-                    controller.mouseClicked(e);
-                }
-            }
-        });
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (controller != null) {
+					controller.mouseClicked(e);
+				}
+			}
+		});
 		
-        javax.swing.JTabbedPane tabbedPane = new javax.swing.JTabbedPane();
-        contentPane.add(tabbedPane, BorderLayout.CENTER);
-        
-        tabbedPane.addTab("Drawing Canvas", pnlDrawing);
-        
-        txtLog.setEditable(false);
-        javax.swing.JScrollPane scrollPaneLog = new javax.swing.JScrollPane(txtLog);
-        tabbedPane.addTab("Activity Log", scrollPaneLog);
-        
-        btnActionEdit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (controller != null) {
-                    controller.modifyShape();
-                }
-            }
-        });
-        
-        btnActionDelete.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (controller != null) {
-                    controller.deleteShape();
-                }
-            }
-        });
+		javax.swing.JTabbedPane tabbedPane = new javax.swing.JTabbedPane();
+		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		
+		tabbedPane.addTab("Drawing Canvas", pnlDrawing);
+		
+		txtLog.setEditable(false);
+		javax.swing.JScrollPane scrollPaneLog = new javax.swing.JScrollPane(txtLog);
+		tabbedPane.addTab("Activity Log", scrollPaneLog);
 		
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.WEST);
-		panel_1.setLayout(new GridLayout(4, 0, 0, 0));
+		panel_1.setLayout(new GridLayout(3, 1, 0, 0)); 
 		
 		JPanel panel_2 = new JPanel();
 		panel_1.add(panel_2);
 		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
-		javax.swing.JMenuItem mntmOpenDrawing = new javax.swing.JMenuItem("Open Drawing");
-        mntmOpenDrawing.addActionListener(e -> { if (controller != null) controller.openDrawing(); });
-        mnFile.add(mntmOpenDrawing);
-
-        javax.swing.JMenuItem mntmOpenLog = new javax.swing.JMenuItem("Open Log");
-        mntmOpenLog.addActionListener(e -> { if (controller != null) controller.openLog(); });
-        mnFile.add(mntmOpenLog);
-        
-
-        
-        btnLoadNext.addActionListener(e -> {
-            if (controller != null) controller.readNextLogLine();
-        });
-        
 		
 		btnOperationDrawing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -219,30 +197,73 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 		
 		JPanel panel_3 = new JPanel();
 		panel_1.add(panel_3);
+		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
 		
 		btnActionEdit.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        if (controller != null) {
-		            controller.modifyShape();
-		        }
-		    }
+			public void actionPerformed(ActionEvent e) {
+				if (controller != null) {
+					controller.modifyShape();
+				}
+			}
 		});
 		btnActionEdit.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_3.add(btnActionEdit);
-        btnLoadNext.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel_3.add(btnLoadNext);
-        btnLoadNext.setEnabled(false); 
+		
+		btnLoadNext.addActionListener(e -> {
+			if (controller != null) controller.readNextLogLine();
+		});
+		btnLoadNext.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnLoadNext);
+		btnLoadNext.setEnabled(false); 
 
 		btnActionDelete.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        if (controller != null) {
-		            controller.deleteShape();
-		        }
-		    }
+			public void actionPerformed(ActionEvent e) {
+				if (controller != null) {
+					controller.deleteShape();
+				}
+			}
 		});
 		btnActionDelete.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_3.add(btnActionDelete);		
 		
+		btnUndo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnUndo);
+		btnUndo.setEnabled(false);
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (controller != null) controller.undo();
+			}
+		});
+
+		btnRedo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnRedo);
+		btnRedo.setEnabled(false);
+		btnRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (controller != null) controller.redo();
+			}
+		});
+		
+		btnToFront.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnToFront);
+		btnToFront.setEnabled(false);
+		btnToFront.addActionListener(e -> { if (controller != null) controller.toFront(); });
+		
+		btnToBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnToBack);
+		btnToBack.setEnabled(false);
+		btnToBack.addActionListener(e -> { if (controller != null) controller.toBack(); });
+		
+		btnBringToFront.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnBringToFront);
+		btnBringToFront.setEnabled(false);
+		btnBringToFront.addActionListener(e -> { if (controller != null) controller.bringToFront(); });
+		
+		btnBringToBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_3.add(btnBringToBack);
+		btnBringToBack.setEnabled(false);
+		btnBringToBack.addActionListener(e -> { if (controller != null) controller.bringToBack(); });
+
 		JPanel panel_4 = new JPanel();
 		panel_1.add(panel_4);
 		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
@@ -271,59 +292,24 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 		btnsShapes.add(btnShapeHexagon);
 		panel_4.add(btnShapeHexagon);
 		
-		btnOperationDrawing.setSelected(true);
-		setOperationDrawing();
-		
 		btnColorEdge.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        controller.chooseEdgeColor();
-		    }
+			public void actionPerformed(ActionEvent e) {
+				controller.chooseEdgeColor();
+			}
 		});
+		btnColorEdge.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_4.add(btnColorEdge);
 
 		btnColorInner.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        controller.chooseInnerColor();
-		    }
-		});
-		
-		btnUndo.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnUndo);
-		btnRedo.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnRedo);
-		
-		btnUndo.setEnabled(false);
-		btnRedo.setEnabled(false);
-
-		btnUndo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (controller != null) controller.undo();
+				controller.chooseInnerColor();
 			}
 		});
-
-		btnRedo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (controller != null) controller.redo();
-			}
-		});
+		btnColorInner.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel_4.add(btnColorInner);
 		
-		btnToFront.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnToFront);
-		btnToBack.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnToBack);
-		btnBringToFront.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnBringToFront);
-		btnBringToBack.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel_3.add(btnBringToBack);
-
-		btnToFront.setEnabled(false);
-		btnToBack.setEnabled(false);
-		btnBringToFront.setEnabled(false);
-		btnBringToBack.setEnabled(false);
-
-		btnToFront.addActionListener(e -> { if (controller != null) controller.toFront(); });
-		btnToBack.addActionListener(e -> { if (controller != null) controller.toBack(); });
-		btnBringToFront.addActionListener(e -> { if (controller != null) controller.bringToFront(); });
-		btnBringToBack.addActionListener(e -> { if (controller != null) controller.bringToBack(); });
+		btnOperationDrawing.setSelected(true);
+		setOperationDrawing();
 	}
 	
 	private void setOperationDrawing() {
