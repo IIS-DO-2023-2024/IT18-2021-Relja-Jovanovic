@@ -123,4 +123,15 @@ public class HexagonAdapter extends SurfaceShape {
                ":radius=" + getRadius() + 
                ":edgeColor=" + getColor().getRGB() + ":innerColor=" + getInnerColor().getRGB();
 	}
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof HexagonAdapter) {
+            HexagonAdapter hex = (HexagonAdapter) obj;
+            if (this.getCenter().equals(hex.getCenter()) && this.getRadius() == hex.getRadius()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

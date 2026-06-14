@@ -77,7 +77,7 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 	private Color edgeColor = Color.BLACK, innerColor = Color.WHITE;
 	boolean lineWaitingForEndPoint = false;
 	private Point startPoint;
-	
+	private JButton btnLoadNext = new JButton("Load Next");
 	
 	
 	
@@ -184,6 +184,20 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 		JPanel panel_2 = new JPanel();
 		panel_1.add(panel_2);
 		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
+		javax.swing.JMenuItem mntmOpenDrawing = new javax.swing.JMenuItem("Open Drawing");
+        mntmOpenDrawing.addActionListener(e -> { if (controller != null) controller.openDrawing(); });
+        mnFile.add(mntmOpenDrawing);
+
+        javax.swing.JMenuItem mntmOpenLog = new javax.swing.JMenuItem("Open Log");
+        mntmOpenLog.addActionListener(e -> { if (controller != null) controller.openLog(); });
+        mnFile.add(mntmOpenLog);
+        
+
+        
+        btnLoadNext.addActionListener(e -> {
+            if (controller != null) controller.readNextLogLine();
+        });
+        
 		
 		btnOperationDrawing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -215,6 +229,9 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 		});
 		btnActionEdit.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel_3.add(btnActionEdit);
+        btnLoadNext.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel_3.add(btnLoadNext);
+        btnLoadNext.setEnabled(false); 
 
 		btnActionDelete.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
@@ -414,5 +431,9 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 	
 	public javax.swing.JTextArea getTxtLog() {
         return txtLog;
+    }
+	
+	public JButton getBtnLoadNext() {
+        return btnLoadNext;
     }
 }

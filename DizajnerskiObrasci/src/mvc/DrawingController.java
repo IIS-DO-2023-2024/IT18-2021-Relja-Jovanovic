@@ -15,6 +15,9 @@ public class DrawingController implements observer.Subject {
     private Color edgeColor = Color.BLACK;
     private Color innerColor = Color.WHITE;
     
+    private java.util.ArrayList<String> loadedLogLines = new java.util.ArrayList<>();
+    private int currentLogLineIndex = 0;
+    
     private java.util.ArrayList<command.Command> undoList = new java.util.ArrayList<>();
     private java.util.ArrayList<command.Command> redoList = new java.util.ArrayList<>();
     
@@ -437,5 +440,208 @@ public class DrawingController implements observer.Subject {
     public void saveLog() {
         strategy.SaveManager manager = new strategy.SaveManager(new strategy.SaveLog(frame));
         manager.save();
+    }
+    
+    public void openDrawing() {
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Bin file", "bin"));
+        fileChooser.setDialogTitle("Open drawing");
+
+        if (fileChooser.showOpenDialog(null) == javax.swing.JFileChooser.APPROVE_OPTION) {
+            try (java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.FileInputStream(fileChooser.getSelectedFile()))) {
+                
+                java.util.ArrayList<Shape> loadedShapes = (java.util.ArrayList<Shape>) ois.readObject();
+                model.getShapes().clear();
+                model.getShapes().addAll(loadedShapes);
+                
+                undoList.clear();
+                redoList.clear();
+                updateUndoRedoButtons();
+                
+                frame.getView().repaint();
+                notifyObservers();
+                javax.swing.JOptionPane.showMessageDialog(null, "Crtež je uspešno učitan!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(null, "Greška pri učitavanju crteža!", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void openLog() {
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Text file", "txt"));
+        fileChooser.setDialogTitle("Open log");
+
+        if (fileChooser.showOpenDialog(null) == javax.swing.JFileChooser.APPROVE_OPTION) {
+            try {
+                loadedLogLines.clear();
+                java.nio.file.Files.lines(fileChooser.getSelectedFile().toPath()).forEach(line -> loadedLogLines.add(line));
+                
+                currentLogLineIndex = 0;
+                
+                model.getShapes().clear();
+                undoList.clear();
+                redoList.clear();
+                frame.getTxtLog().setText("");
+                updateUndoRedoButtons();
+                frame.getView().repaint();
+                
+                frame.getBtnLoadNext().setEnabled(true);
+                
+                javax.swing.JOptionPane.showMessageDialog(null, "Log uspešno učitan! Klikćite 'Load Next' za iscrtavanje.", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(null, "Greška pri učitavanju loga!", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    public void readNextLogLine() {
+        if (currentLogLineIndex < loadedLogLines.size()) {
+            String line = loadedLogLines.get(currentLogLineIndex);
+            
+            parseLine(line);
+            
+            frame.log(line); 
+            currentLogLineIndex++;
+            
+            if (currentLogLineIndex >= loadedLogLines.size()) {
+                frame.getBtnLoadNext().setEnabled(false);
+                javax.swing.JOptionPane.showMessageDialog(null, "Kraj loga!", "Info", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+    
+
+    private void parseLine(String line) {
+        if (line.startsWith("Undo")) {
+            undo();
+            return;
+        } else if (line.startsWith("Redo")) {
+            redo();
+            return;
+        }
+
+        String[] mainParts = line.split("->");
+        if (mainParts.length < 2) return;
+        
+        String commandName = mainParts[0].trim();
+        String shapeData = mainParts[1].trim();
+
+        if (commandName.equals("Added")) {
+            Shape shape = parseShape(shapeData);
+            command.CmdAddShape cmd = new command.CmdAddShape(model, shape);
+            cmd.execute();
+            undoList.add(cmd);
+            redoList.clear();
+            
+        } else if (commandName.equals("Modified")) {
+            String[] states = shapeData.split(" TO ");
+            Shape oldShape = parseShape(states[0]);
+            Shape newShape = parseShape(states[1]);
+            Shape realShape = findShapeInModel(oldShape);
+            
+            if (realShape != null) {
+                command.CmdUpdateShape cmd = new command.CmdUpdateShape(model, realShape, newShape);
+                cmd.execute();
+                undoList.add(cmd);
+                redoList.clear();
+            }
+            
+        } else {
+            Shape shape = parseShape(shapeData);
+            Shape realShape = findShapeInModel(shape);
+            
+            if (realShape != null) {
+                command.Command cmd = null;
+                switch (commandName) {
+                    case "Deleted": cmd = new command.CmdRemoveShape(model, realShape); break;
+                    case "Selected": cmd = new command.CmdSelectShape(realShape); break;
+                    case "Deselected": cmd = new command.CmdDeselectShape(realShape); break;
+                    case "Moved To Front": cmd = new command.CmdToFront(model, realShape); break;
+                    case "Moved To Back": cmd = new command.CmdToBack(model, realShape); break;
+                    case "Brought To Front": cmd = new command.CmdBringToFront(model, realShape); break;
+                    case "Brought To Back": cmd = new command.CmdBringToBack(model, realShape); break;
+                }
+                if (cmd != null) {
+                    cmd.execute();
+                    undoList.add(cmd);
+                    redoList.clear();
+                }
+            }
+        }
+        updateUndoRedoButtons();
+        frame.getView().repaint();
+        notifyObservers();
+    }
+
+    private Shape parseShape(String shapeStr) {
+        String[] parts = shapeStr.split(":");
+        String type = parts[0].trim();
+
+        try {
+            if (type.equals("Point")) {
+                int x = Integer.parseInt(parts[1].split("=")[1]);
+                int y = Integer.parseInt(parts[2].split("=")[1]);
+                int color = Integer.parseInt(parts[3].split("=")[1]);
+                return new geometry.Point(x, y, false, new Color(color));
+                
+            } else if (type.equals("Line")) {
+                int startX = Integer.parseInt(parts[1].split("=")[1]);
+                int startY = Integer.parseInt(parts[2].split("=")[1]);
+                int endX = Integer.parseInt(parts[3].split("=")[1]);
+                int endY = Integer.parseInt(parts[4].split("=")[1]);
+                int color = Integer.parseInt(parts[5].split("=")[1]);
+                return new geometry.Line(new geometry.Point(startX, startY), new geometry.Point(endX, endY), false, new Color(color));
+                
+            } else if (type.equals("Rectangle")) {
+                int x = Integer.parseInt(parts[1].split("=")[1]);
+                int y = Integer.parseInt(parts[2].split("=")[1]);
+                int w = Integer.parseInt(parts[3].split("=")[1]);
+                int h = Integer.parseInt(parts[4].split("=")[1]);
+                int edgeC = Integer.parseInt(parts[5].split("=")[1]);
+                int innerC = Integer.parseInt(parts[6].split("=")[1]);
+                return new geometry.Rectangle(new geometry.Point(x, y), w, h, false, new Color(edgeC), new Color(innerC));
+                
+            } else if (type.equals("Circle")) {
+                int x = Integer.parseInt(parts[1].split("=")[1]);
+                int y = Integer.parseInt(parts[2].split("=")[1]);
+                int r = Integer.parseInt(parts[3].split("=")[1]);
+                int edgeC = Integer.parseInt(parts[4].split("=")[1]);
+                int innerC = Integer.parseInt(parts[5].split("=")[1]);
+                return new geometry.Circle(new geometry.Point(x, y), r, false, new Color(edgeC), new Color(innerC));
+                
+            } else if (type.equals("Donut")) {
+                int x = Integer.parseInt(parts[1].split("=")[1]);
+                int y = Integer.parseInt(parts[2].split("=")[1]);
+                int r = Integer.parseInt(parts[3].split("=")[1]);
+                int innerR = Integer.parseInt(parts[4].split("=")[1]);
+                int edgeC = Integer.parseInt(parts[5].split("=")[1]);
+                int innerC = Integer.parseInt(parts[6].split("=")[1]);
+                return new geometry.Donut(new geometry.Point(x, y), r, innerR, false, new Color(edgeC), new Color(innerC));
+                
+            } else if (type.equals("Hexagon")) {
+                int x = Integer.parseInt(parts[1].split("=")[1]);
+                int y = Integer.parseInt(parts[2].split("=")[1]);
+                int r = Integer.parseInt(parts[3].split("=")[1]);
+                int edgeC = Integer.parseInt(parts[4].split("=")[1]);
+                int innerC = Integer.parseInt(parts[5].split("=")[1]);
+                return new geometry.HexagonAdapter(new geometry.Point(x, y), r, false, new Color(edgeC), new Color(innerC));
+            }
+        } catch (Exception e) {
+            System.out.println("Greska pri parsiranju oblika: " + shapeStr);
+        }
+        return null;
+    }
+
+    private Shape findShapeInModel(Shape parsedShape) {
+        for (int i = model.getShapes().size() - 1; i >= 0; i--) {
+            if (model.getShapes().get(i).equals(parsedShape)) {
+                return model.getShapes().get(i);
+            }
+        }
+        return null;
     }
 }
