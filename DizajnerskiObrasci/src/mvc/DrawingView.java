@@ -1,14 +1,15 @@
 package mvc;
 
-import geometry.Shape;
 import javax.swing.JPanel;
+import geometry.Shape;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
 
 public class DrawingView extends JPanel {
-    
-    private DrawingModel model = new DrawingModel();
+
+    private DrawingModel model; 
 
     public DrawingView() {
         setBackground(Color.WHITE);
@@ -20,7 +21,8 @@ public class DrawingView extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
+        super.paint(g); 
+        
         if (model != null) {
             Iterator<Shape> it = model.getShapes().iterator();
             while (it.hasNext()) {

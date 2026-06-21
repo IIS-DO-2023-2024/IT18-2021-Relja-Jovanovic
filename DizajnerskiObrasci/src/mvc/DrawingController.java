@@ -52,8 +52,8 @@ public class DrawingController implements observer.Subject {
                     updateUndoRedoButtons();
                     shapeClicked = true;
                     break; 
-                }
-            }
+                } // kraj if-a
+            } // kraj for-a
 
             if (!shapeClicked) {
                 for (int i = model.getShapes().size() - 1; i >= 0; i--) {
@@ -72,12 +72,12 @@ public class DrawingController implements observer.Subject {
             frame.getView().repaint();
             notifyObservers(); 
             return;
-        }
+        } // kraj velikog ifa znaci kraj select selected-a
         
-        for (Shape shape : model.getShapes()) {
-            shape.setSelected(false);
-        }
-        
+	        for (Shape shape : model.getShapes()) {
+	            shape.setSelected(false);
+	        }
+	        
         if (frame.isOperationDrawingSelected()) {
             
             if (frame.isShapePointSelected()) {
@@ -172,9 +172,9 @@ public class DrawingController implements observer.Subject {
             }
             
             frame.getView().repaint();
-        }
+        } // gotov drawing
         notifyObservers();
-    }
+    } // gotov mouseclicked
     public void chooseEdgeColor() {
         Color chosenColor = javax.swing.JColorChooser.showDialog(null, "Choose edge color", edgeColor);
         if (chosenColor != null) {
@@ -281,7 +281,7 @@ public class DrawingController implements observer.Subject {
             }
         } 
         notifyObservers();
-    }
+    } // kraj modify-a
 
     public void deleteShape() {
         if (model.getShapes().isEmpty()) return;
@@ -305,7 +305,7 @@ public class DrawingController implements observer.Subject {
             frame.getView().repaint(); 
         }
         notifyObservers();
-    }
+    } // gotov deleteshape
 
     private int getSelectedShapeIndex() {
         for (int i = model.getShapes().size() - 1; i >= 0; i--) {
@@ -478,7 +478,7 @@ public class DrawingController implements observer.Subject {
             try {
                 loadedLogLines.clear();
                 java.nio.file.Files.lines(fileChooser.getSelectedFile().toPath()).forEach(line -> loadedLogLines.add(line));
-                
+                	
                 currentLogLineIndex = 0;
                 
                 model.getShapes().clear();
@@ -575,7 +575,7 @@ public class DrawingController implements observer.Subject {
         updateUndoRedoButtons();
         frame.getView().repaint();
         notifyObservers();
-    }
+    } // kraj parsea
 
     private Shape parseShape(String shapeStr) {
         String[] parts = shapeStr.split(":");

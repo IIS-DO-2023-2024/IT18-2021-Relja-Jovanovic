@@ -115,6 +115,8 @@ public class DlgPoint extends JDialog {
 							}
 							point = new Point(newX, newY,false, color);
 							dispose();
+							
+							
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(null,  "You entered wrong data type!", "Error!", JOptionPane.ERROR_MESSAGE);
 						}

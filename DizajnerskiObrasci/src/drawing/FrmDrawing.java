@@ -26,6 +26,7 @@ import geometry.Rectangle;
 import geometry.Shape;
 import mvc.DrawingController;
 import mvc.DrawingModel;
+import mvc.DrawingView;
 
 import javax.swing.UIManager;
 import java.awt.Color;
@@ -52,7 +53,7 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 	
 	private int activeOperation = OPERATION_DRAWING;
 	
-	private PnlDrawing pnlDrawing = new PnlDrawing();
+	private DrawingView pnlDrawing = new DrawingView();
 	private ButtonGroup btnsOperation = new ButtonGroup();
 	private ButtonGroup btnsShapes = new ButtonGroup();
 	private JToggleButton btnOperationDrawing = new JToggleButton("Drawing");
@@ -68,7 +69,7 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 	private JButton btnColorInner = new JButton("Inner color");
 	private JButton btnUndo = new JButton("Undo");
 	private JButton btnRedo = new JButton("Redo");
-	private javax.swing.JTextArea txtLog = new javax.swing.JTextArea();
+	private javax.swing.JTextArea txtLog = new javax.swing.JTextArea(); // za log 
 	private JToggleButton btnShapeHexagon = new JToggleButton("Hexagon");
 	private JButton btnToFront = new JButton("To Front");
 	private JButton btnToBack = new JButton("To Back");
@@ -83,7 +84,6 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 	
 	private JPanel contentPane;
 	protected DrawingController controller;
-
 	/**
 	 * Launch the application.
 	 */
@@ -112,7 +112,7 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 				this.controller.addObserver(this);
 			}
 	}
-	public PnlDrawing getView() {
+	public DrawingView getView() {
 		return this.pnlDrawing;
 	}
 	/**
@@ -342,7 +342,6 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 
 	private void setOperationEditDelete() {
 		activeOperation = OPERATION_EDIT_DELETE;
-		
 		btnActionEdit.setEnabled(true);
 		btnActionDelete.setEnabled(true);
 		

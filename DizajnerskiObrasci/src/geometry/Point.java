@@ -55,7 +55,7 @@ public class Point extends Shape {
 	}
 
 	public int getY() {
-		return this.y; // moze i return y (bez this)
+		return this.y; 
 	}
 
 	public void setY(int y) {
@@ -86,7 +86,7 @@ public class Point extends Shape {
 	public void draw(Graphics g) {
 		g.setColor(getColor());
 		g.drawLine(x - 2, y, x + 2, y); // horizontalna linija
-		g.drawLine(x, y - 2, x, y - 2); //vertiklna linija
+		g.drawLine(x, y - 2, x, y + 2); //vertiklna linija
 		
 		if(isSelected()) {
 			g.setColor(Color.BLUE);
