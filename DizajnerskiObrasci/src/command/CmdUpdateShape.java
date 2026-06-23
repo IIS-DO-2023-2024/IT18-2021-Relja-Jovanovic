@@ -22,6 +22,7 @@ public class CmdUpdateShape implements Command {
         int index = model.getShapes().indexOf(original);
         if (index != -1) {
             model.getShapes().set(index, newState);
+            model.getShapes().get(index).setSelected(true);
             original = newState; 
         }
     }

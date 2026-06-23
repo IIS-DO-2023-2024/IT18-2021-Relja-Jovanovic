@@ -1,4 +1,4 @@
-package strategy;
+	package strategy;
 
 import mvc.DrawingModel;
 import java.io.FileOutputStream;

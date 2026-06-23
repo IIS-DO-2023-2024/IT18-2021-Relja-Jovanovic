@@ -342,6 +342,9 @@ public class FrmDrawing extends JFrame implements observer.Observer {
 
 	private void setOperationEditDelete() {
 		activeOperation = OPERATION_EDIT_DELETE;
+			
+		btnsShapes.clearSelection();
+		
 		btnActionEdit.setEnabled(true);
 		btnActionDelete.setEnabled(true);
 		

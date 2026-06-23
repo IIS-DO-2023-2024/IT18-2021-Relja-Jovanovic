@@ -132,7 +132,7 @@ public class DrawingController implements observer.Subject {
             } else if (frame.isShapeCircleSelected()) {
                 DlgCircle dlgCircle = new DlgCircle();
                 dlgCircle.setPoint(mouseClick);
-                dlgCircle.setColors(innerColor, edgeColor); 
+                dlgCircle.setColors(edgeColor, innerColor); 
                 dlgCircle.setVisible(true);
                 if (dlgCircle.getCircle() != null) {
                     command.CmdAddShape cmd = new command.CmdAddShape(model, dlgCircle.getCircle());
